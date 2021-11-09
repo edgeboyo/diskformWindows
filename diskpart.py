@@ -2,7 +2,7 @@ from subprocess import Popen, PIPE
 import ctypes
 import sys
 
-from Disk import Disk
+from Disk import Disk, Partition
 
 
 def getFirstInt(input):
@@ -16,21 +16,26 @@ def getFirstInt(input):
     return int(result)
 
 
+def clearToTableContent(entryList, parter="-"):
+    while len(entryList) > 0:
+        line = entryList[0]
+        del entryList[0]
+        if parter in line:
+            break
+
+    if entryList == []:
+        return None
+
+    return list(filter(lambda x: len(x) != 0, entryList))
+
+
 def getDiskStructure():
     script = "list disk"
 
     diskList = execute(script).split("\n")
 
-    while len(diskList) > 0:
-        line = diskList[0]
-        del diskList[0]
-        if "-" in line:
-            break
-
-    diskList = list(filter(lambda x: len(x) > 2, diskList))
-
-    disks = []
-    for disk in diskList:
+    disks: list[Disk] = []
+    for disk in clearToTableContent(diskList):
         inx = disk.find("Disk")
         if inx == -1:
             raise Exception("Fatal Error: malformed stdout")
@@ -43,13 +48,34 @@ def getDiskStructure():
         script = f"select disk {disk.id}\nlist partition"
         partList = execute(script).split("\n")
 
-        while len(partList) > 0:
-            line = partList[0]
-            del partList[0]
-            if "-" in line:
-                break
+        parts = []
+        for part in clearToTableContent(partList):
+            inx = part.find("Partition")
+            if inx == -1:
+                raise
+            inx += 10
+            id = getFirstInt(part[inx:])
 
-        print(partList)
+            disk.addPartition(Partition(id))
+
+            script = f"select disk {disk.id}\nselect partition {id}\ndetail partition"
+
+            letter = execute(script).split('\n')
+
+            letter = clearToTableContent(letter, "---")
+
+            if letter != None and len(letter) == 1:
+                [letter] = letter
+                inx = letter.find('Volume')
+                inx += 7
+
+                for c in letter[inx:][:10]:  # arbitrary limit set
+                    if c.isalpha():
+                        disk.part[-1].assignLetter(c)
+                        break
+
+    for d in disks:
+        print(d)
 
 
 def is_admin():

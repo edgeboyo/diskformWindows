@@ -1,0 +1,6 @@
+# Preference files
+.*
+!.gitignore
+
+# Python cache
+__pycache__

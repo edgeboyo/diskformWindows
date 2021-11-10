@@ -8,11 +8,7 @@ class Disk():
         self.part.append(part)
 
     def __str__(self):
-        diskRep = f"""
-Disk {self.id}
-
-Partitions on disk:
-"""[1:]
+        diskRep = f"Disk {self.id}\nPartitions on disk:\n"""
         for part in self.part:
             diskRep += f"\n\t* {part}"
         return diskRep

@@ -48,7 +48,6 @@ def getDiskStructure():
         script = f"select disk {disk.id}\nlist partition"
         partList = execute(script).split("\n")
 
-        parts = []
         for part in clearToTableContent(partList):
             inx = part.find("Partition")
             if inx == -1:
@@ -74,8 +73,7 @@ def getDiskStructure():
                         disk.part[-1].assignLetter(c)
                         break
 
-    for d in disks:
-        print(d)
+    return disks
 
 
 def is_admin():
@@ -112,7 +110,7 @@ def setUpScript(script):
         f.write(script)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # for testing
     elevate()
     getDiskStructure()
     input("...")

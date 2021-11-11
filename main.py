@@ -2,9 +2,10 @@
 from datetime import date
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QDate, QDateTime, QTimer
-from PyQt5.QtWidgets import QApplication, QDateTimeEdit, QDialog, QHBoxLayout, QLabel, QPushButton, QTableWidget, QTableWidgetItem, QVBoxLayout
+from PyQt5.QtGui import QTextBlock
+from PyQt5.QtWidgets import QApplication, QDateTimeEdit, QDialog, QHBoxLayout, QLabel, QPlainTextEdit, QPushButton, QTableWidget, QTableWidgetItem, QVBoxLayout
 
-from diskpart import getDiskStructure, is_admin
+from diskpart import getDiskStructure, is_admin, performFormat
 
 
 class GUI(QDialog):
@@ -121,7 +122,14 @@ class GUI(QDialog):
         diff = currentTime.secsTo(dateTime)
 
         if diff < 0:
-            print("Can't go back to the past")
+            self.dialog = QDialog()
+            layout = QVBoxLayout()
+
+            layout.addWidget(QLabel("You need to set a date in the future"))
+
+            self.dialog.setLayout(layout)
+
+            self.dialog.show()
             return
 
         self.diff = diff
@@ -211,11 +219,31 @@ class GUI(QDialog):
 
         self.actionLayout.addWidget(QLabel("Formatting in progress..."))
 
-        # do formatting
+        # self.debugInfo = performFormat(self.disk.id, self.part.id)
 
-        # self.clearActionLayout()
-        # self.build()
-        # self.actionLayout.addWidget(QLabel("Formatting finished"))
+        self.debugInfo = "THIS IS THE DEBUG INFO"
+
+        self.resetGUIState()
+
+        debug = QPushButton("Format return information (DEBUG)")
+        debug.clicked.connect(self.displayDebugInfo)
+
+        self.actionLayout.addWidget(QLabel("Formatting finished"))
+        self.actionLayout.addWidget(debug)
+
+    def displayDebugInfo(self):
+        self.dialog = QDialog()
+
+        layout = QHBoxLayout()
+
+        debugInfo = QPlainTextEdit()
+        debugInfo.setPlainText(self.debugInfo)
+
+        layout.addWidget(debugInfo)
+
+        self.dialog.setLayout(layout)
+
+        self.dialog.show()
 
 
 if __name__ == "__main__":

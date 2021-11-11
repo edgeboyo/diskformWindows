@@ -76,6 +76,13 @@ def getDiskStructure():
     return disks
 
 
+def performFormat(diskId, paritionId):
+    # can add a dialog to select later
+    script = f"select disk {diskId}\nselect partition {paritionId}\nformat fs=ntfs quick"
+
+    return execute(script, 24*60*60*60)
+
+
 def is_admin():
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()

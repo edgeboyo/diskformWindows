@@ -219,9 +219,9 @@ class GUI(QDialog):
 
         self.actionLayout.addWidget(QLabel("Formatting in progress..."))
 
-        # self.debugInfo = performFormat(self.disk.id, self.part.id)
+        self.debugInfo = performFormat(self.disk.id, self.part.id)
 
-        self.debugInfo = "THIS IS THE DEBUG INFO"
+        # self.debugInfo = "THIS IS THE DEBUG INFO"
 
         self.resetGUIState()
 

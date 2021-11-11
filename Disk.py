@@ -22,6 +22,12 @@ class Partition():
     def assignLetter(self, letter: str):
         self.letter = letter.upper()
 
+    def shorthand(self):
+        letter = ""
+        if self.letter != None:
+            letter = f" ({self.letter})"
+        return f"Partition {self.id}{letter}"
+
     def __str__(self):
         letterAssigned = "No letter assigned to partition"
         if not self.letter == None:
